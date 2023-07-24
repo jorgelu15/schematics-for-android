@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "scheme": "diagramsapp",
+    "name": "Diagrams Siprem",
+    "slug": "appDiagrams",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "sas.sipremcol.co.diagramas"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "sas.sipremcol.co.diagramas"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "86d43225-c76a-4c61-b578-b534398ef8c0"
+      }
+    }
+  }
+}
