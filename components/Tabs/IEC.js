@@ -3,9 +3,12 @@ import { Dimensions, Pressable, Text, TextInput, View } from "react-native";
 import { FlatList, SafeAreaView } from "react-native";
 import { SvgUri } from "react-native-svg";
 import TemplateContext from "../../context/template/templateContext";
+import { imageURI } from "../Sketch/imagesURI";
+import { Image } from "react-native";
 const { width, height } = Dimensions.get("window");
 const widthSk = width > 800 ? (width - 800) + 800 : 800, heightSk = height > 800 ? (height - 800) + 800 : 800;
 const MemoizedComponentItem = memo(({ item, handleAddComponent }) => {
+    const filename = imageURI.filter((image) => image.nombre === item?.path.split("/")[7]);
     return (
         <Pressable
             style={{
@@ -27,12 +30,15 @@ const MemoizedComponentItem = memo(({ item, handleAddComponent }) => {
                     borderRadius: 10,
                 }}
             >
-                <SvgUri
-                    height={80}
-                    width={128}
-                    uri={item.path}
+                <Image
+                    source={filename[0].path}
+                    // height={80}s
+                    // width={128}
+                    // uri={item.path}
                     style={{
                         backgroundColor: "#fff",
+                        width: (width / 3) - 15,
+                        height: 100
                     }}
                 />
             </View>
@@ -68,7 +74,7 @@ export default function IEC({ navigation }) {
     const handleChange = e => {
         const searchText = e.nativeEvent.text;
         setComponentName(searchText);
-    
+
         if (searchText === '') {
             // Restablecer los componentes a la lista completa
             searchComponentIEC('');
@@ -83,7 +89,7 @@ export default function IEC({ navigation }) {
 
             let proxId = 0;
             coordXY.map((item) => {
-                if(item.id_u > proxId){
+                if (item.id_u > proxId) {
                     proxId = item.id_u
                 }
             })
@@ -91,11 +97,11 @@ export default function IEC({ navigation }) {
 
             let selectedComponent = IECcomponentsFounds.filter((item) => item.id === idx);
             selectedComponent[0].id_u = proxId;
-            selectedComponent[0].x = -translateX - 20 + width/2;
-            selectedComponent[0].y = -translateY + 100 + height/2;
+            selectedComponent[0].x = -translateX - 20 + width / 2;
+            selectedComponent[0].y = -translateY + 100 + height / 2;
 
             //selectedComponent[0].id = 0;
-            
+
             setcoordXY([...coordXY, selectedComponent[0]]);
             setComponentName('');
             navigation.navigate('SketchBoard');

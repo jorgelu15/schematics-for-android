@@ -307,7 +307,6 @@ function useMoveComponent(lineaGuia, setLineaGuia, statusLn,  setStatusLn, scale
                 }
                 return item;
             });
-
         }
 
         //en caso de esta todo ok, se setan con las nuevas coordenadas

@@ -41,7 +41,7 @@ export default function Sketch({ lineaGuia, setLineaGuia, sizeT, showTB, setshow
   const { handleTouchDownText, handleTouchMoveText, handleTouchUpText } = useMoveText(widthSk, heightSk, sizeSquare, scaleRatio, statusMove, setStatusMove);
   const { handleTouchDownLine } = useLineNode();
   // new States ----------------------------------------------//
-
+  
   //------------------------------------------------------------//
   const nCuadradosH = (heightSk - (heightSk % sizeSquare)) / sizeSquare;
   const nCuadradosV = (widthSk - (widthSk % sizeSquare)) / sizeSquare;

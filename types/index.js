@@ -28,5 +28,8 @@ export const ERROR_REMOVE = "ERROR_REMOVE";
 export const ADD_ERROR = "ADD_ERROR";
 export const LOGOUT_USER  = "LOGOUT_USER";
 export const NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
+export const USUARIO_AUTENTICADO = "USUARIO_AUTENTICADO";
 
 export const SYNCRONIZE = "SYNCRONIZE";
+
+export const CRENDIALS_ME = "CRENDIALS_ME";

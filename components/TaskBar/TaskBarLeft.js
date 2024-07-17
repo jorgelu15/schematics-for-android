@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { View, Pressable } from 'react-native'
-import { Entypo, MaterialCommunityIcons, MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons, MaterialIcons, Ionicons, AntDesign, FontAwesome } from '@expo/vector-icons';
 import authContext from '../../context/auth/authContext';
-const TaskBarLeft = ({ logOut, handleOpenModalCloseTemplate, onSyncronizeTemplatesWithDB, onUpdateTemplates, onSaveImageAsync, onSaveTemplates, styles, navigation: { navigate }, grid, setGrid, coordXY, modalprint, setmodalprint, onUndo, onRedo, setextModal, textModal, statusLn, setStatusLn, ...props }) => {
+const TaskBarLeft = ({ coordXYT, setcoordxyprev, setcoordxytprev, logOut, handleOpenModalCloseTemplate, onSyncronizeTemplatesWithDB, onUpdateTemplates, onSaveImageAsync, onSaveTemplates, styles, navigation: { navigate }, grid, setGrid, coordXY, modalprint, setmodalprint, onUndo, onRedo, setextModal, textModal, statusLn, setStatusLn, ...props }) => {
   const { status } = useContext(authContext);
   const [taskbarleft, settaskbarleft] = React.useState({
     state: false,
@@ -106,6 +106,8 @@ const TaskBarLeft = ({ logOut, handleOpenModalCloseTemplate, onSyncronizeTemplat
           onPress={() => {
             setGrid(true);
             setmodalprint(true);
+            setcoordxyprev(coordXY);
+            setcoordxytprev(coordXYT);
           }}
           style={{ padding: 10 }}
         >
@@ -121,11 +123,16 @@ const TaskBarLeft = ({ logOut, handleOpenModalCloseTemplate, onSyncronizeTemplat
             color="black"
           />
         </Pressable>
-        {status === "authenticated" &&
-          <Pressable onPress={() => logOut()} style={{ padding: 10 }}>
-            <MaterialCommunityIcons name="logout" size={24} color="black" />
-          </Pressable>}
-
+        <Pressable
+          onPress={() => logOut()}
+          style={{ padding: 10 }}
+        >
+          <FontAwesome
+            name="sign-out"
+            size={24}
+            color="black"
+          />
+        </Pressable>
       </View>
     </View>
   );

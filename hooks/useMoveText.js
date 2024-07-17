@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import templateContext from "../context/template/templateContext";
 
 function useMoveText(widthSk, heightSk, sizeSquare, scaleRatio, statusMove, setStatusMove) {
-    const { coordXY, coordXYT, setcoordXY, setcoordXYT } = useContext(templateContext);
+    const { coordXY, coordXYT, coordLn, setcoordXY, setcoordXYT, setCoordLn } = useContext(templateContext);
     const [shiftXY, setShiftXY] = useState({ x: 0, y: 0 });
 
     const handleTouchDownText = (e, idx) => {
@@ -72,6 +72,10 @@ function useMoveText(widthSk, heightSk, sizeSquare, scaleRatio, statusMove, setS
         );
         setcoordXY(updatedCoordXY);
 
+        const updatedCoordLn = coordLn.map((item, indx) =>
+            true ? {...item, isSelected: false} : item
+        );
+        setCoordLn(updatedCoordLn);
         //estado del movimiento
         setStatusMove(1);
     };

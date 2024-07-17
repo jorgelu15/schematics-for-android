@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   Dimensions,
   Pressable,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   View,
@@ -25,6 +26,7 @@ import { useTemplate } from '../hooks/useTemplate';
 import { useSaveFile } from '../hooks/useSaveFile';
 import { useTextComponent } from '../hooks/useTextComponent';
 import { useForm } from '../hooks/useForm';
+import CropGenerateImage from '../components/utils/CropGenerateImage';
 
 
 const { width, height } = Dimensions.get("window");
@@ -64,11 +66,10 @@ export default function SketchBoard({ navigation, ...props }) {
     idx: 0
   });
 
-  const { logOut } = useContext(authContext);
+  const { logOut, usuario } = useContext(authContext);
   const { onSaveImageAsync } = useSaveFile(sketchRef, setGrid);
   const { onAddText } = useTextComponent();
-  const { coordXY, coordXYT, coordLn, setCoordLn, translateX, translateY, onSaveTemplates, onCloseTemplates, onUpdateTemplates, setcoordXYT, setTranslateX, setTranslateY, onSyncronizeTemplatesWithDB } = useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal, setshowModalCloseTemplate);
-  const { status } = useContext(authContext);
+  const { coordXY, coordXYT, setcoordXY, coordLn, setCoordLn, translateX, translateY, onSaveTemplates, onCloseTemplates, onUpdateTemplates, setcoordXYT, setTranslateX, setTranslateY, onSyncronizeTemplatesWithDB } = useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal, setshowModalCloseTemplate);
 
   const backgroundStyle = {
     backgroundColor: Colors.lighter,
@@ -90,22 +91,6 @@ export default function SketchBoard({ navigation, ...props }) {
   const [modalLogin, setModalLogin] = React.useState(false);
   const [editText, setEditText] = React.useState({ status: false, idx: null });
   const [statusLn, setStatusLn] = React.useState(0);
-
-
-  const { username, password, onChange } = useForm({
-    username: '',
-    password: ''
-  });
-
-  const onLogin = () => {
-    if (username.trim() === '' || password.trim() === '') {
-      addError();
-      return;
-    }
-
-    Keyboard.dismiss();
-    signIn({ username, password });
-  }
 
   const onUndo = () => {
   }
@@ -162,7 +147,8 @@ export default function SketchBoard({ navigation, ...props }) {
 
   useEffect(() => {
   }, [coordXYT]);
-
+  const [coordxyprev, setcoordxyprev] = useState(null)
+  const [coordxytprev, setcoordxytprev] = useState(null)
   return (
     <View style={backgroundStyle}>
       <StatusBar hidden={true} backgroundColor="white" />
@@ -180,7 +166,6 @@ export default function SketchBoard({ navigation, ...props }) {
               { translateY: translateY },
             ],
           }}
-          ref={sketchRef}
         >
           <Sketch
             lineaGuia={lineaGuia}
@@ -343,17 +328,21 @@ export default function SketchBoard({ navigation, ...props }) {
                 <AntDesign name="close" size={24} color="black" />
               </Pressable>
             </View>
+            <View style={{ backgroundColor: "#fff", display: "flex", justifyContent: "center", alignItems: "center", width: "100%", height: height / 3, borderWidth: 1, borderColor: "#ededed", overflow: "scroll" }}>
+              {/* imagen nueva apartir del mapeo de components */}
+              <CropGenerateImage sketchRef={sketchRef} coordXY={coordXY} coordXYT={coordXYT} coordLn={coordLn} />
+            </View>
             <View>
               <Text style={{ marginVertical: 10 }}>
                 La siguiente imagen se generará en formato PNG,
-                ¿Desea realizar esta accón?
+                ¿Desea realizar esta acción?
               </Text>
             </View>
             <View
               style={{ justifyContent: "space-between", flexDirection: "row" }}
             >
               <TouchableOpacity
-                onPress={() => onSaveImageAsync()}
+                onPress={() => { onSaveImageAsync(); setcoordXYT(coordxytprev); setcoordXY(coordxyprev); }}
                 style={{
                   backgroundColor: "#A0C645",
                   padding: 10,
@@ -365,7 +354,7 @@ export default function SketchBoard({ navigation, ...props }) {
                 <Text>SI</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => { setGrid(false); setmodalprint(false) }}
+                onPress={() => { setGrid(false); setmodalprint(false); setcoordXYT(coordxytprev); setcoordXY(coordxyprev); }}
                 style={{
                   backgroundColor: "#A0C645",
                   padding: 10,
@@ -455,7 +444,7 @@ export default function SketchBoard({ navigation, ...props }) {
               keyboardType="default"
             />
             <View>
-              <Pressable onPress={() => onAddText(textChange, sizeT, setextModal)}>
+              <Pressable onPress={() => onAddText(textChange, sizeT, setextModal, setTextChange)}>
                 <View
                   style={{
                     display: "flex",
@@ -545,12 +534,15 @@ export default function SketchBoard({ navigation, ...props }) {
           </Modal>
         }
         <TaskBarLeft
+          setcoordxytprev={setcoordxytprev}
+          setcoordxyprev={setcoordxyprev}
           logOut={logOut}
           onSaveTemplates={handleSaveTemplate}
           onSaveImageAsync={onSaveImageAsync}
           navigation={navigation}
           grid={grid}
           coordXY={coordXY}
+          coordXYT={coordXYT}
           setGrid={setGrid}
           statusLn={statusLn}
           setStatusLn={setStatusLn}
@@ -566,6 +558,6 @@ export default function SketchBoard({ navigation, ...props }) {
           onSyncronizeTemplatesWithDB={onSyncronizeTemplatesWithDB}
         />
       </View>
-    </View>
+    </View >
   );
 }

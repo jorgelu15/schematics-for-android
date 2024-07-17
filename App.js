@@ -1,17 +1,15 @@
+import { Text, AppRegistry } from 'react-native';
+import { registerRootComponent } from 'expo';
+import { useEffect, useState } from 'react';
 import { Link, NavigationContainer } from '@react-navigation/native';
-
+import * as Linking from 'expo-linking';
 import TemplateState from './context/template/templateState';
 import AuthState from './context/auth/authState';
 import Navigator from './navigator/Navigator';
 
-import * as Linking from 'expo-linking';
-import { Text } from 'react-native';
-import { useEffect, useState } from 'react';
-
-const prefix = Linking.createURL('/')
+const prefix = Linking.createURL('/Login')
 
 function AppState({ children, ...props }) {
-
   return (
     <AuthState>
       <TemplateState>
@@ -36,25 +34,32 @@ export default function App() {
 
   const [data, setData] = useState(null);
 
-  function handleDeepLink(event) {
-    let data = Linking.parse(event.url)
-    setData(data);
-  }
-
   useEffect(() => {
-
-    Linking.addEventListener("url", handleDeepLink);
-
-    return () => {
-      Linking.removeEventListener("url");
+    async function getInitialURL() {
+      try {
+        const initialURL = await Linking.getInitialURL();
+        if (initialURL) {
+          setData(Linking.parse(initialURL));
+        }
+      } catch (error) {
+        console.error("Error getting initial URL:", error);  //{queryParams: {username: "1217.1217"}}
+      }
     }
-  }, [])
 
+    if (!data) {
+      getInitialURL();
+    }
+
+  }, [data])
+  console.log(data)
   return (
     <NavigationContainer linking={linking} fallback={<Text>Cargando...</Text>}>
       <AppState>
-        <Navigator />
+        <Navigator data={data} setData={setData} />
       </AppState>
     </NavigationContainer>
   );
 }
+
+AppRegistry.registerComponent('app', () => App);
+// registerRootComponent(App);

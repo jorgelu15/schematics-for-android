@@ -5,7 +5,7 @@ import TemplateContext from '../../context/template/templateContext';
 import { useTextComponent } from '../../hooks/useTextComponent';
 
 const TaskBarBottom = ({ isSelected, idx, isText, editText, setEditText, setSizeT, statusLn, setStatusLn, lineaGuia, setLineaGuia, guidesO, setGuidesO, guidesD, setGuidesD, ...props }) => {
-  
+
   const { coordXY, coordXYT, coordLn, setcoordXY, setcoordXYT, handleSizeTDecrease, handleSizeTIncrease, setCoordLn } = useTextComponent();
   const calcRotate = (rotate) => {
     rotate = parseInt(rotate) + 90;
@@ -41,7 +41,7 @@ const TaskBarBottom = ({ isSelected, idx, isText, editText, setEditText, setSize
       }
       setCoordLn(updatedCoordLn);
     }
-    
+
 
     const updatedCoordXYT = [...coordXYT];
 
@@ -56,78 +56,77 @@ const TaskBarBottom = ({ isSelected, idx, isText, editText, setEditText, setSize
 
   const handleCompletedLn = () => {
 
-    if(lineaGuia.id_component_origin === -1 || lineaGuia.id_component_destiny === -1 ||
+    if (lineaGuia.id_component_origin === -1 || lineaGuia.id_component_destiny === -1 ||
       lineaGuia.ancla1 === -1 || lineaGuia.ancla2 === -1) return
 
     setCoordLn([...coordLn,
-      {
-          id_component_origin_db: 0,
-          id_component_origin: lineaGuia.id_component_origin,
-          id_component_destiny_db: 0,
-          id_component_destiny: lineaGuia.id_component_destiny,
-          ancla1: lineaGuia.ancla1,
-          ancla2: lineaGuia.ancla2,
-          isSelected: false
-      }
-      ])
+    {
+      id_component_origin_db: 0,
+      id_component_origin: lineaGuia.id_component_origin,
+      id_component_destiny_db: 0,
+      id_component_destiny: lineaGuia.id_component_destiny,
+      ancla1: lineaGuia.ancla1,
+      ancla2: lineaGuia.ancla2,
+      isSelected: false
+    }
+    ])
 
-      setStatusLn(0)
+    setStatusLn(0)
 
-      setLineaGuia(prevState => ({
-        ...prevState,
-        id_component_origin: -1,
-        id_component_destiny: -1,
-        ancla1: -1,
-        ancla2: -1,
-        status: false
-      }))
+    setLineaGuia(prevState => ({
+      ...prevState,
+      id_component_origin: -1,
+      id_component_destiny: -1,
+      ancla1: -1,
+      ancla2: -1,
+      status: false
+    }))
 
-      setGuidesO(prevState => ({
-        ...prevState,
-        idx: 0,
-        anchor: -1,
-        status: false
-      }))
+    setGuidesO(prevState => ({
+      ...prevState,
+      idx: 0,
+      anchor: -1,
+      status: false
+    }))
 
-      setGuidesD(prevState => ({
-        ...prevState,
-        idx: 0,
-        anchor: -1,
-        status: false
-      }))
+    setGuidesD(prevState => ({
+      ...prevState,
+      idx: 0,
+      anchor: -1,
+      status: false
+    }))
 
   };
 
   const handleCancelLn = () => {
 
-      setStatusLn(0)
+    setStatusLn(0)
 
-      setLineaGuia(prevState => ({
-        ...prevState,
-        id_component_origin: -1,
-        id_component_destiny: -1,
-        ancla1: -1,
-        ancla2: -1,
-        status: false
-      }))
+    setLineaGuia(prevState => ({
+      ...prevState,
+      id_component_origin: -1,
+      id_component_destiny: -1,
+      ancla1: -1,
+      ancla2: -1,
+      status: false
+    }))
 
-      setGuidesO(prevState => ({
-        ...prevState,
-        idx: 0,
-        anchor: -1,
-        status: false
-      }))
-      setGuidesD(prevState => ({
-        ...prevState,
-        idx: 0,
-        anchor: -1,
-        status: false
-      }))
+    setGuidesO(prevState => ({
+      ...prevState,
+      idx: 0,
+      anchor: -1,
+      status: false
+    }))
+    setGuidesD(prevState => ({
+      ...prevState,
+      idx: 0,
+      anchor: -1,
+      status: false
+    }))
 
   };
 
   const onRemoveComponent = (idx) => {
-
     if (coordLn?.length > 0) {
       const newCoordLn = coordLn.filter(
         (cLn) =>
@@ -139,15 +138,17 @@ const TaskBarBottom = ({ isSelected, idx, isText, editText, setEditText, setSize
 
     const newCoordXY = coordXY.filter((item, index) => !item.isSelected);
     setcoordXY(newCoordXY);
+  };
 
+  const onRemoveText = (idx) => {
     const newCoordXYT = coordXYT.filter((item, index) => !item.isSelected);
     setcoordXYT(newCoordXYT);
-  };
+  }
 
   const handleOnChangeText = (idx) => {
     setEditText({ ...editText, status: !editText.status, idx: idx });
   }
-  
+
   return (
     <View
       style={{
@@ -199,35 +200,47 @@ const TaskBarBottom = ({ isSelected, idx, isText, editText, setEditText, setSize
           </Pressable>
         }
         {statusLn == 1 &&
-        <Pressable onPress={() => handleCompletedLn()}>
-          <AntDesign name="checkcircleo" size={24} color="black" style={{ padding: 10 }} />
-        </Pressable>
+          <Pressable onPress={() => handleCompletedLn()}>
+            <AntDesign name="checkcircleo" size={24} color="black" style={{ padding: 10 }} />
+          </Pressable>
         }
         {statusLn == 1 &&
-        <Pressable onPress={() => handleCancelLn()}>
-          <MaterialCommunityIcons name="cancel" size={24} color="black" style={{ padding: 10 }} />
-        </Pressable>
+          <Pressable onPress={() => handleCancelLn()}>
+            <MaterialCommunityIcons name="cancel" size={24} color="black" style={{ padding: 10 }} />
+          </Pressable>
         }
         {statusLn != 1 &&
-        <Pressable onPress={() => handleRotate()}>
-          <MaterialIcons
-            name="rotate-90-degrees-ccw"
-            size={24}
-            style={{ padding: 10 }}
-            color="black"
-          />
-        </Pressable>
+          <Pressable onPress={() => handleRotate()}>
+            <MaterialIcons
+              name="rotate-90-degrees-ccw"
+              size={24}
+              style={{ padding: 10 }}
+              color="black"
+            />
+          </Pressable>
         }
-        {statusLn != 1 &&
-        <Pressable onPress={() => onRemoveComponent(idx)}>
-          <Ionicons
-            name="trash"
-            size={24}
-            style={{ padding: 10 }}
-            color="black"
-          />
-        </Pressable>
+        {statusLn != 1 && isText !== true ?
+          <Pressable onPress={() => onRemoveComponent(idx)}>
+            <Ionicons
+              name="trash"
+              size={24}
+              style={{ padding: 10 }}
+              color="black"
+            />
+          </Pressable>
+          :
+          null
         }
+
+        {isText &&
+          <Pressable onPress={() => onRemoveText(idx)}>
+            <Ionicons
+              name="trash"
+              size={24}
+              style={{ padding: 10 }}
+              color="black"
+            />
+          </Pressable>}
       </View>
     </View>
   );

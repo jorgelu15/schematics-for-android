@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get("window");
 function useTextComponent() {
     const { coordXY, coordXYT, coordLn, setcoordXYT, setcoordXY, setCoordLn, translateX, translateY } = useContext(templateContext);
     
-    const onAddText = (textChange, sizeT, setextModal) => {
+    const onAddText = (textChange, sizeT, setextModal, setTextChange) => {
     
       setcoordXYT([//conflicto con base de datos
         ...coordXYT,
@@ -23,6 +23,8 @@ function useTextComponent() {
           amount: 4
         }
       ]);
+      setTextChange('');
+      
       setextModal(false);
     };
 

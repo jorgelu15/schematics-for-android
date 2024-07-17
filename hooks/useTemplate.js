@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import templateContext from "../context/template/templateContext";
 import { ToastAndroid } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import authContext from "../context/auth/authContext";
 
 function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal, setshowModalCloseTemplate) {
     const { coordXY,
@@ -20,16 +21,18 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
         getComponents,
         getTemplates,
         setcoordXYT,
+        setcoordXY,
         setCoordLn,
         syncronizedTemplates,
     } = useContext(templateContext);
+    const { usuario } = useContext(authContext);
 
     useEffect(() => {
         getComponents();
     }, []);
 
     useEffect(() => {
-        getTemplates();
+        getTemplates(usuario);
     }, []);
 
     const onSaveTemplates = () => {
@@ -40,24 +43,24 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
         }
 
         let proxId = 0;
-        templates.map((item) => {
+        templates[1].map((item) => {
             if (item.id > proxId) {
                 proxId = item.id
             }
+
         })
-        proxId += 1
+        proxId += 1;
         //validar que se guarde
+        
         setTemplates({
             amarre_template: coordLn,
-            // text_components: coordXYT,
-            // components: coordXY,
             text_component: coordXYT,
             component: coordXY,
             id: proxId,
-            idServer: proxId,
+            idServer: proxId,   
             name: templateName,
             img: "",
-            userCreated: ""
+            usuario_created: usuario.id_nivel === 1 ? "SIPREM" : usuario?.usuario
         });
         setTemplateName('');
         setShowModal(false)
@@ -71,8 +74,8 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
 
     const onUpdateTemplates = () => {
         if (
-            ((JSON.stringify(template?.components) !== JSON.stringify(coordXY)) ||
-                (JSON.stringify(template?.text_components) !== JSON.stringify(coordXYT)) ||
+            ((JSON.stringify(template?.component) !== JSON.stringify(coordXY)) ||
+                (JSON.stringify(template?.text_component) !== JSON.stringify(coordXYT)) ||
                 (JSON.stringify(template?.amarre_template) !== JSON.stringify(coordLn)))
             && template?.id) {
             setTemplate(
@@ -86,8 +89,8 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
                     idServer: template?.idServer,
                     name: template?.name,
                     img: template?.img,
-                    // userCreated: template?.usuario_created,
-                    userCreated: "",
+                    userCreated: usuario?.usuario,
+                    // userCreated: "",
                 },
                 template.id
             );
@@ -113,6 +116,7 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
         translateX,
         translateY,
         setcoordXYT,
+        setcoordXY,
         setTranslateX,
         setTranslateY,
         onSaveTemplates,

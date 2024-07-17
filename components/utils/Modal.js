@@ -8,7 +8,7 @@ const Modal = ({ children, ...props }) => {
         zIndex: 1000,
         padding: 20,
         alignSelf: "center",
-        top: height / 3,
+        top: height / 4,
         backgroundColor: "white",
         borderRadius: 10,
         shadowColor: "#171717",

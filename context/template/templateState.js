@@ -1,6 +1,9 @@
 import React, { Children, useReducer, useState } from 'react';
+import { Dimensions, ToastAndroid } from 'react-native';
 import TemplateContext from './templateContext';
 import TemplateReducer from './templateReducer';
+import * as FileSystem from 'expo-file-system';
+
 
 import {
     GET_COMPONENTS,
@@ -33,8 +36,10 @@ import {
 } from '../../types/index'
 import apiDiagrams from '../../config/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { ToastAndroid } from 'react-native';
+import axios, { all } from 'axios';
+
+const { width, height } = Dimensions.get("window");
+const widthSk = width > 800 ? (width - 800) + 800 : 800, heightSk = height > 800 ? (height - 800) + 800 : 800;
 
 const TemplateState = props => {
 
@@ -54,16 +59,32 @@ const TemplateState = props => {
         UNIONEScomponentsFounds: [],
         OTROScomponents: [],
         OTROScomponentsFounds: [],
-        translateX: 0,
-        translateY: 0
+        translateX: -((widthSk / 2) - (width / 2)),
+        translateY: -((heightSk / 2) - (height / 2))
     }
     const [isOnline, setIsOnline] = useState(true);
 
+
+
     const [state, dispatch] = useReducer(TemplateReducer, initialState);
+
+    const downloadAndStoreSVG = async (url, filename) => {
+        const svgFile = await FileSystem.downloadAsync(
+            url,
+            FileSystem.cacheDirectory + `${filename}.svg`
+        );
+        return svgFile.uri;
+    };
 
     const getComponents = async () => {
         try {
             const res = await apiDiagrams.get('/components');
+
+            res.data.data.map((item, idx) => {
+                downloadAndStoreSVG(item.path, item.path.split("/")[7]);
+                // item.path
+            })
+
             await AsyncStorage.setItem("components", JSON.stringify(res.data.data));
 
             const componentes = JSON.parse(await AsyncStorage.getItem("components"));
@@ -153,50 +174,50 @@ const TemplateState = props => {
             payload: data
         })
     }
-    
+
     const checkInternetConnection = async () => {
         try {
             await axios.head('https://www.google.com');
             setIsOnline(true);
-            ToastAndroid.show("si hay internet Uwu", ToastAndroid.BOTTOM)
-            console.log(isOnline, "si hay internet Uwu")
+            ToastAndroid.show("Conexion establecida", ToastAndroid.BOTTOM)
 
         } catch (error) {
             setIsOnline(false);
-            ToastAndroid.show("no hay internet Uwu", ToastAndroid.BOTTOM)
-            console.log(isOnline, "No hay internet Uwu")
+            ToastAndroid.show("No hay conexion a internet", ToastAndroid.BOTTOM)
         }
     };
 
-    const getTemplates = async () => {
+    const getTemplates = async (usuario) => {
         try {
             checkInternetConnection();
             let res;
             let templatesDB = [];
+            let allTemplatesDB = [];
             if (isOnline) {
                 res = await apiDiagrams.get('/templates');
-                templatesDB = res.data.data.filter(item => item.usuario_created === "siprem");
+                templatesDB = res.data.data.filter(item => item.usuario_created.toLowerCase() === "siprem");
+                allTemplatesDB = res.data.data.filter(item => item.usuario_created.toLowerCase() === usuario?.usuario);
             }
             //[{id:1, name: "xd"}, {id:1, name: "xd"}] json que viene en la api
             let templatesJoin = [];
             let plantillas = [];
             plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
-            console.log(plantillas)
-            if (Array.isArray(plantillas) && plantillas.length === 0) {
+            if (Array.isArray(plantillas) && plantillas.length === 0 && Array.isArray(allTemplatesDB) & allTemplatesDB.length === 0) {
                 // Si 'plantillas' es un array, simplemente agrega sus elementos directamente a 'templatesCombined'
-                templatesJoin = [templatesDB, []];
-            } 
-
-            if(!Array.isArray(plantillas)) {
-                // Si 'plantillas' no es un array válido, inicializa 'templatesCombined' solo con 'templatesDB'
-                templatesJoin = [templatesDB, []];
+                templatesJoin = [templatesDB, [...allTemplatesDB]];
             }
 
-            if(Array.isArray(plantillas) && plantillas.length > 0) {
+            if (!Array.isArray(plantillas)) {
+                // Si 'plantillas' no es un array válido, inicializa 'templatesCombined' solo con 'templatesDB'
+                templatesJoin = [templatesDB, [...allTemplatesDB]];
+            }
+
+            if (Array.isArray(plantillas) && plantillas.length > 0) {
                 templatesJoin = plantillas;//[[{id:1, name: "xd"}, {id:1, name: "xd"}], [{id:1, name: "xd"}, {id:1, name: "xd"}]]
             }
 
             await AsyncStorage.setItem("templates", JSON.stringify(templatesJoin));
+            console.log(allTemplatesDB[0], "templatesJoin", usuario)
             
             dispatch({
                 type: GET_TEMPLATES,
@@ -214,7 +235,7 @@ const TemplateState = props => {
             let plantillas = [];
 
             plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
-            if(Array.isArray(plantillas) && Array.isArray(plantillas[1])) {
+            if (Array.isArray(plantillas) && Array.isArray(plantillas[1])) {
                 plantillas[1].push(data)
             }
 
@@ -233,10 +254,10 @@ const TemplateState = props => {
         try {
             const plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
 
-            if(Array.isArray(plantillas) && Array.isArray(plantillas[1])) {
+            if (Array.isArray(plantillas) && Array.isArray(plantillas[1])) {
                 const findedIndex = plantillas[1].findIndex(item => item.id === id);
-                
-                if(findedIndex !== -1) {
+
+                if (findedIndex !== -1) {
                     plantillas[1][findedIndex] = data;
                 }
             }
@@ -295,19 +316,17 @@ const TemplateState = props => {
 
     const syncronizedTemplates = async (data) => {
         try {
-            console.log(data)
-            // const respuesta = await apiDiagrams.post(`/syncronize`, data);
-            // await AsyncStorage.setItem("templates", JSON.stringify(respuesta.data.templates))
-            // dispatch({
-            //     type: SYNCRONIZE,
-            //     payload: respuesta.data.templates
-            // })
+            const res = await apiDiagrams.post(`/templates`, data);
+            if (Platform.OS === 'android') ToastAndroid.show('Se sincronizaron los datos con la nube', ToastAndroid.LONG);
+            if (Platform.OS === 'ios') alert('Se sincronizaron los datos con la nube');
         } catch (error) {
-
+            if (Platform.OS === 'android') ToastAndroid.show('Hubo un error al sincronizar los datos', ToastAndroid.LONG);
+            if (Platform.OS === 'ios') alert('Hubo un error al sincronizar los datos');
+            console.log(error)
         }
     }
 
-    return (
+    return (    
         <TemplateContext.Provider
             value={{
                 texts: state.texts,

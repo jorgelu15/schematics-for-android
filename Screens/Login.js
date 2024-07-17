@@ -8,20 +8,13 @@ import { useForm } from "../hooks/useForm";
 import { useContext, useEffect, useState } from "react";
 import authContext from "../context/auth/authContext";
 import templateContext from "../context/template/templateContext";
-import NetInfo from '@react-native-community/netinfo';
-import { ToastAndroid } from "react-native";
 
 const { width, height } = Dimensions.get('window');
 
 
 const Login = () => {
-  const { signIn, errorMessage, removeError, addError, checkToken } = useContext(authContext);
+  const { credentialsME, status, signIn, errorMessage, removeError, addError, checkToken, setCredentialsME, usuarioAutenticado } = useContext(authContext);
   const { getTemplates } = useContext(templateContext);
-  const [isConnected, setIsConnected] = useState(true);
-
-  useEffect(() => {
-    getTemplates();
-  }, []);
 
   const { username, password, onChange } = useForm({
     username: '',
@@ -37,6 +30,15 @@ const Login = () => {
     }, 5000)
   }, [errorMessage])
 
+  useEffect(()=> {
+    if(status === "not-authenticated") {
+      usuarioAutenticado();
+    }
+    if(status === "authenticated") {
+      navigate("Diagramas");
+    }
+  }, [status])
+
   const onLogin = () => {
     if (username.trim() === '' || password.trim() === '') {
       addError();
@@ -44,7 +46,7 @@ const Login = () => {
     }
 
     Keyboard.dismiss();
-    signIn({ username, password });
+    signIn(credentialsME ? credentialsME : { username, password });
   }
 
   return (

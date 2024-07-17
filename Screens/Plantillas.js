@@ -1,8 +1,9 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { FlatList, SafeAreaView, Text, TextInput, TouchableOpacity } from "react-native";
+import { Dimensions, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import TemplateContext from "../context/template/templateContext";
-
+import authContext from "../context/auth/authContext";
+const { height } = Dimensions.get("screen");
 const MemoizedTemplateItem = memo(({ item, handleTemplates }) => {
     return (
         <TouchableOpacity
@@ -26,10 +27,12 @@ const MemoizedTemplateItem = memo(({ item, handleTemplates }) => {
 export default function Plantillas({ navigation }) {
     const templateContext = useContext(TemplateContext);
     const { templatesFound, setcoordXY, setcoordXYT, setCoordLn, setTemplateState, searchTemplate, closeTemplate, getTemplates } = templateContext;
-    console.log(templatesFound[1])
-
+    const { usuario } = useContext(authContext);
     let proxId = 0;
     if (Array.isArray(templatesFound[1])) {
+        templatesFound[1].map((item) => {
+            item.id_u = 0;
+        })
         templatesFound[1].map((item) => {
             if (item.id_u > proxId) {
                 proxId = item.id_u
@@ -38,10 +41,9 @@ export default function Plantillas({ navigation }) {
             item.id_u = proxId;
         })
     }
-    
 
     useEffect(() => {
-        getTemplates();
+        getTemplates(usuario);
     }, []);
 
     const [templateName, setTemplateName] = useState('');
@@ -87,36 +89,40 @@ export default function Plantillas({ navigation }) {
                         borderRadius: 5,
                     }} />
             </View>
-            <Text
-                style={{
-                    marginHorizontal: 20,
-                    marginVertical: 10,
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                    borderRadius: 5,
-                    fontWeight: 'bold',
-                }}
-            >Almacenamiento en la nube</Text>
-            <FlatList
-                data={templatesFound[0]}
-                keyExtractor={(item) => item.id}
-                renderItem={memoizedRenderItem}
-            />
-            <Text
-                style={{
-                    marginHorizontal: 20,
-                    marginVertical: 10,
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                    borderRadius: 5,
-                    fontWeight: 'bold',
-                }}
-            >Almacenamiento local</Text>
-            <FlatList
-                data={templatesFound[1]}
-                keyExtractor={(item) => item.id_u}
-                renderItem={memoizedRenderItem}
-            />
+            <View style={{ height: (height - 200) / 2 }}>
+                <Text
+                    style={{
+                        marginHorizontal: 20,
+                        marginVertical: 10,
+                        paddingHorizontal: 10,
+                        paddingVertical: 5,
+                        borderRadius: 5,
+                        fontWeight: 'bold',
+                    }}
+                >Almacenamiento en la nube</Text>
+                <FlatList
+                    data={templatesFound[0]}
+                    keyExtractor={(item) => item.id}
+                    renderItem={memoizedRenderItem}
+                />
+            </View>
+            <View style={{ height: (height - 120) / 2 }}>
+                <Text
+                    style={{
+                        marginHorizontal: 20,
+                        marginVertical: 10,
+                        paddingHorizontal: 10,
+                        paddingVertical: 5,
+                        borderRadius: 5,
+                        fontWeight: 'bold',
+                    }}
+                >Almacenamiento local</Text>
+                <FlatList
+                    data={templatesFound[1]}
+                    keyExtractor={(item) => item.id_u.toString()}
+                    renderItem={memoizedRenderItem}
+                />
+            </View>
         </SafeAreaView>
     );
 }

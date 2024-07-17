@@ -76,6 +76,7 @@ export default (state, action) => {
                 coordXY: action.payload
             };
         case GET_TEMPLATES:
+            
             return {
                 ...state,
                 templates: action.payload,
