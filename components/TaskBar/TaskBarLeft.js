@@ -86,9 +86,6 @@ const TaskBarLeft = ({ coordXYT, setcoordxyprev, setcoordxytprev, logOut, handle
             color="black"
           />
         </Pressable>
-        <Pressable onPress={() => onSyncronizeTemplatesWithDB()} style={{ padding: 10 }}>
-          <AntDesign name="sync" size={24} color="black" />
-        </Pressable>
         <Pressable onPress={() => onSaveTemplates()} style={{ padding: 10 }}>
           <Entypo name="save" size={24} color="black" />
         </Pressable>
@@ -123,16 +120,7 @@ const TaskBarLeft = ({ coordXYT, setcoordxyprev, setcoordxytprev, logOut, handle
             color="black"
           />
         </Pressable>
-        <Pressable
-          onPress={() => logOut()}
-          style={{ padding: 10 }}
-        >
-          <FontAwesome
-            name="sign-out"
-            size={24}
-            color="black"
-          />
-        </Pressable>
+
       </View>
     </View>
   );

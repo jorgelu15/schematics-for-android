@@ -31,27 +31,18 @@ export default function Navigator({ data, setData }) {
 
   return (
     <Stack.Navigator initialRouteName="Login">
-      {status !== "authenticated" ? (
+
+      <>
         <Stack.Screen
-          name="Login"
-          component={Login}
+          name="SketchBoard"
+          component={SketchBoard}
           options={{
             headerShown: false,
           }}
         />
-      ) : (
-        <>
-          <Stack.Screen
-            name="SketchBoard"
-            component={SketchBoard}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen name="Diagramas" component={Diagrams} />
-          <Stack.Screen name="Plantillas" component={Plantillas} />
-        </>
-      )}
+        <Stack.Screen name="Diagramas" component={Diagrams} />
+        <Stack.Screen name="Plantillas" component={Plantillas} />
+      </>
     </Stack.Navigator>
   );
 }

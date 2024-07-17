@@ -43,7 +43,7 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
         }
 
         let proxId = 0;
-        templates[1].map((item) => {
+        templates?.map((item) => {
             if (item.id > proxId) {
                 proxId = item.id
             }
@@ -60,7 +60,8 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
             idServer: proxId,   
             name: templateName,
             img: "",
-            usuario_created: usuario.id_nivel === 1 ? "SIPREM" : usuario?.usuario
+            usuario_created: "",
+            id_u: proxId
         });
         setTemplateName('');
         setShowModal(false)
@@ -73,6 +74,7 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
     }
 
     const onUpdateTemplates = () => {
+        console.log(template)
         if (
             ((JSON.stringify(template?.component) !== JSON.stringify(coordXY)) ||
                 (JSON.stringify(template?.text_component) !== JSON.stringify(coordXYT)) ||
@@ -81,16 +83,14 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
             setTemplate(
                 {
                     amarre_template: coordLn,
-                    // text_components: coordXYT,
-                    // components: coordXY,
                     text_component: coordXYT,
                     component: coordXY,
                     id: template?.id,
+                    id_u: template?.id,
                     idServer: template?.idServer,
                     name: template?.name,
                     img: template?.img,
                     userCreated: usuario?.usuario,
-                    // userCreated: "",
                 },
                 template.id
             );
@@ -104,7 +104,7 @@ function useTemplate(templateName, setTemplateName, setErrorAlert, setShowModal,
 
     const onSyncronizeTemplatesWithDB = () => {
         if (templates) {
-            syncronizedTemplates(templates[1]);
+            syncronizedTemplates(templates);
         }
     }
 

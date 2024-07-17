@@ -3,7 +3,9 @@ import { Dimensions, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity }
 import { View } from "react-native";
 import TemplateContext from "../context/template/templateContext";
 import authContext from "../context/auth/authContext";
+
 const { height } = Dimensions.get("screen");
+
 const MemoizedTemplateItem = memo(({ item, handleTemplates }) => {
     return (
         <TouchableOpacity
@@ -28,19 +30,6 @@ export default function Plantillas({ navigation }) {
     const templateContext = useContext(TemplateContext);
     const { templatesFound, setcoordXY, setcoordXYT, setCoordLn, setTemplateState, searchTemplate, closeTemplate, getTemplates } = templateContext;
     const { usuario } = useContext(authContext);
-    let proxId = 0;
-    if (Array.isArray(templatesFound[1])) {
-        templatesFound[1].map((item) => {
-            item.id_u = 0;
-        })
-        templatesFound[1].map((item) => {
-            if (item.id_u > proxId) {
-                proxId = item.id_u
-            }
-            proxId += 1
-            item.id_u = proxId;
-        })
-    }
 
     useEffect(() => {
         getTemplates(usuario);
@@ -65,15 +54,16 @@ export default function Plantillas({ navigation }) {
         setTemplateState(templateActual);
 
         navigation.navigate('SketchBoard');
-    }, [setcoordXY, setcoordXYT, setCoordLn, setTemplateState, navigation]);
+    }, [setcoordXY, setcoordXYT, setCoordLn, setTemplateState, closeTemplate, navigation]);
 
     const memoizedRenderItem = useMemo(() => {
         return ({ item }) => (
             <MemoizedTemplateItem item={item} handleTemplates={memoizedHandleTemplates} />
         );
     }, [memoizedHandleTemplates]);
+
     return (
-        <SafeAreaView style={{ flex: 1, justifyContent: "center", backgroundColor: "white" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
             <View style={{ marginVertical: 5, borderBottomColor: "#D7D7D9", borderBottomWidth: 1 }}>
                 <TextInput
                     placeholder="Buscar..."
@@ -87,26 +77,10 @@ export default function Plantillas({ navigation }) {
                         paddingVertical: 5,
                         backgroundColor: "#F0F0F2",
                         borderRadius: 5,
-                    }} />
-            </View>
-            <View style={{ height: (height - 200) / 2 }}>
-                <Text
-                    style={{
-                        marginHorizontal: 20,
-                        marginVertical: 10,
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
-                        borderRadius: 5,
-                        fontWeight: 'bold',
                     }}
-                >Almacenamiento en la nube</Text>
-                <FlatList
-                    data={templatesFound[0]}
-                    keyExtractor={(item) => item.id}
-                    renderItem={memoizedRenderItem}
                 />
             </View>
-            <View style={{ height: (height - 120) / 2 }}>
+            <View>
                 <Text
                     style={{
                         marginHorizontal: 20,
@@ -118,7 +92,7 @@ export default function Plantillas({ navigation }) {
                     }}
                 >Almacenamiento local</Text>
                 <FlatList
-                    data={templatesFound[1]}
+                    data={templatesFound}
                     keyExtractor={(item) => item.id_u.toString()}
                     renderItem={memoizedRenderItem}
                 />

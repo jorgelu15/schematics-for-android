@@ -107,8 +107,8 @@ export default (state, action) => {
             return {
                 ...state,
                 template: action.payload,
-                templates: state.templates[1].map((item) => item.id === action.payload.id ? action.payload : item),
-                templatesFound: state.templates[1].map((item) => item.id === action.payload.id ? action.payload : item),
+                templates: state.templates.map((item) => item.id === action.payload.id ? action.payload : item),
+                templatesFound: state.templates.map((item) => item.id === action.payload.id ? action.payload : item),
             }
         }
         case GET_TEMPLATE:

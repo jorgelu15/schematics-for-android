@@ -37,6 +37,7 @@ import {
 import apiDiagrams from '../../config/axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { all } from 'axios';
+import { DB as DBData  } from "../../components/Sketch/imagesURI";
 
 const { width, height } = Dimensions.get("window");
 const widthSk = width > 800 ? (width - 800) + 800 : 800, heightSk = height > 800 ? (height - 800) + 800 : 800;
@@ -68,24 +69,9 @@ const TemplateState = props => {
 
     const [state, dispatch] = useReducer(TemplateReducer, initialState);
 
-    const downloadAndStoreSVG = async (url, filename) => {
-        const svgFile = await FileSystem.downloadAsync(
-            url,
-            FileSystem.cacheDirectory + `${filename}.svg`
-        );
-        return svgFile.uri;
-    };
-
     const getComponents = async () => {
         try {
-            const res = await apiDiagrams.get('/components');
-
-            res.data.data.map((item, idx) => {
-                downloadAndStoreSVG(item.path, item.path.split("/")[7]);
-                // item.path
-            })
-
-            await AsyncStorage.setItem("components", JSON.stringify(res.data.data));
+            await AsyncStorage.setItem("components", JSON.stringify(DBData.data));
 
             const componentes = JSON.parse(await AsyncStorage.getItem("components"));
 
@@ -187,46 +173,31 @@ const TemplateState = props => {
         }
     };
 
-    const getTemplates = async (usuario) => {
+    const getTemplates = async () => {
         try {
-            checkInternetConnection();
-            let res;
             let templatesDB = [];
-            let allTemplatesDB = [];
-            if (isOnline) {
-                res = await apiDiagrams.get('/templates');
-                templatesDB = res.data.data.filter(item => item.usuario_created.toLowerCase() === "siprem");
-                allTemplatesDB = res.data.data.filter(item => item.usuario_created.toLowerCase() === usuario?.usuario);
-            }
-            //[{id:1, name: "xd"}, {id:1, name: "xd"}] json que viene en la api
             let templatesJoin = [];
-            let plantillas = [];
-            plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
-            if (Array.isArray(plantillas) && plantillas.length === 0 && Array.isArray(allTemplatesDB) & allTemplatesDB.length === 0) {
-                // Si 'plantillas' es un array, simplemente agrega sus elementos directamente a 'templatesCombined'
-                templatesJoin = [templatesDB, [...allTemplatesDB]];
+            let plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
+    
+            if (!Array.isArray(plantillas) || (Array.isArray(plantillas) && plantillas.length === 0)) {
+                // Si 'plantillas' no es un array válido o está vacío, inicializa 'templatesJoin' con 'templatesDB'
+                templatesJoin = templatesDB;
+            } else {
+                // Si 'plantillas' es un array válido y no está vacío, úsalo como 'templatesJoin'
+                templatesJoin = plantillas;
             }
-
-            if (!Array.isArray(plantillas)) {
-                // Si 'plantillas' no es un array válido, inicializa 'templatesCombined' solo con 'templatesDB'
-                templatesJoin = [templatesDB, [...allTemplatesDB]];
-            }
-
-            if (Array.isArray(plantillas) && plantillas.length > 0) {
-                templatesJoin = plantillas;//[[{id:1, name: "xd"}, {id:1, name: "xd"}], [{id:1, name: "xd"}, {id:1, name: "xd"}]]
-            }
-
+    
             await AsyncStorage.setItem("templates", JSON.stringify(templatesJoin));
-            console.log(allTemplatesDB[0], "templatesJoin", usuario)
             
             dispatch({
                 type: GET_TEMPLATES,
                 payload: templatesJoin,
-            })
+            });
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
+    
 
     const setTemplates = async (data) => {
         try {
@@ -235,12 +206,12 @@ const TemplateState = props => {
             let plantillas = [];
 
             plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
-            if (Array.isArray(plantillas) && Array.isArray(plantillas[1])) {
-                plantillas[1].push(data)
+            if (Array.isArray(plantillas)) {
+                plantillas.push(data)
             }
 
             await AsyncStorage.setItem("templates", JSON.stringify(plantillas));
-
+            console.log(plantillas, data)
             dispatch({
                 type: POST_TEMPLATES,
                 payload: plantillas
@@ -253,12 +224,12 @@ const TemplateState = props => {
     const setTemplate = async (data, id) => {
         try {
             const plantillas = JSON.parse(await AsyncStorage.getItem("templates"));
-
-            if (Array.isArray(plantillas) && Array.isArray(plantillas[1])) {
-                const findedIndex = plantillas[1].findIndex(item => item.id === id);
+            
+            if (Array.isArray(plantillas)) {
+                const findedIndex = plantillas.findIndex(item => item.id === id);
 
                 if (findedIndex !== -1) {
-                    plantillas[1][findedIndex] = data;
+                    plantillas[findedIndex] = data;
                 }
             }
 
