@@ -12,22 +12,7 @@ import Plantillas from '../Screens/Plantillas';
 
 const Stack = createNativeStackNavigator();
 
-export default function Navigator({ data, setData }) {
-  const { status, signIn, checkToken, isOnline, checkInternetConnection, } = useContext(authContext);
-
-  if (status === 'checking') return <Loading />
-
-  useEffect(() => {
-    if (data && data.queryParams && data.queryParams.username && data.queryParams.password) {
-      const username = data.queryParams.username;
-      const password = data.queryParams.password;
-      checkInternetConnection();
-      if (isOnline) {
-        signIn({ username: username, password: password }); //username & password
-      }
-    }
-    checkToken();
-  }, [data])
+export default function Navigator() {
 
   return (
     <Stack.Navigator initialRouteName="Login">
