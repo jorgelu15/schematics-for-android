@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "sas.sipremcol.co.diagramas"
+      "bundleIdentifier": "sa.midgar.com.schematics"
     },
     "android": {
       "adaptiveIcon": {
